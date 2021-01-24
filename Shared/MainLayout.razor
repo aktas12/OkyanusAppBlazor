@@ -1,0 +1,214 @@
+﻿@inherits LayoutComponentBase
+
+<DxGridLayout CssClass="mw-1100" style="height:100vh">
+    <Rows>
+        <DxGridLayoutRow Areas="header header header" Height="100px"  />
+        <DxGridLayoutRow Areas="left-bar content right-bar" />
+        <DxGridLayoutRow Areas="footer footer footer" Height="30px" />
+    </Rows>
+    <Columns>
+        <DxGridLayoutColumn Width="60px" />
+        <DxGridLayoutColumn />
+    </Columns>
+    <Items>
+        <DxGridLayoutItem Area="header">
+            <Template>
+                <div class="gridlayout-header gridlayout-item">
+                    <DxButton Click="@(e => SekmeEkle(-1, "Anasayfa"))" Text="Anasayfa" RenderStyle="ButtonRenderStyle.Success" SizeMode="SizeMode.Small"></DxButton>
+                    <DxButton Click="@(e => SekmeEkle(2, "Muavin"))" Text="Muavin" RenderStyle="ButtonRenderStyle.Dark" SizeMode="SizeMode.Small"></DxButton>
+                    <DxButton Click="@(e => SekmeEkle(3, "Ekran Ara"))" Text="Ekran Ara" RenderStyle="ButtonRenderStyle.Info" SizeMode="SizeMode.Small"></DxButton>
+                    <DxButton Click="@(e => SekmeEkle(4, "Personel 360"))" Text="Personel 360" RenderStyle="ButtonRenderStyle.Warning" SizeMode="SizeMode.Small"></DxButton>
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Area="content" CssClass="gridLayout_contentPart">
+            <Template>
+                <div class="gridlayout-content gridlayout-item">
+                    <DxTabs @bind-ActiveTabIndex="@ActiveTabIndex">
+                        @if (_itemsForTabs == null)
+                        {
+                            <p><code>Yükleniyor...</code></p>
+                        }
+                        else
+                        {
+                            @if (_itemsForTabs.Count > 0)
+                            {
+                                @foreach (var resource in _itemsForTabs)
+                                {
+                                    <DxTabPage>
+                                        <TabTemplate>
+                                            @{
+                                                string myClass = "nav-link pasif";
+                                                int index = _itemsForTabs.IndexOf(resource);
+                                                if (index == ActiveTabIndex)
+                                                {
+                                                    myClass = "nav-link";
+                                                }
+                                            }
+                                            <a class="@myClass">
+                                                <span>
+                                                    @(resource.Caption)
+                                                </span>
+                                                <a class="oi oi-circle-x" style="color:gray" @onclick="@(() => SekmeSil(resource))" @onclick:preventDefault href="javascript:void(0);"></a>
+                                            </a>
+                                        </TabTemplate>
+                                        <ChildContent>
+                                                @if (resource.ResourceId == -1)
+                                                {
+                                                    <Anasayfa></Anasayfa>
+                                                }
+                                                else if (resource.ResourceId == 2)
+                                                {
+                                                    <Muavin></Muavin>
+                                                }
+                                                else if (resource.ResourceId == 3)
+                                                {
+                                                    <EkranAra></EkranAra>
+                                                }
+                                                else if (resource.ResourceId ==4)
+                                                {
+                                                    <Personel360></Personel360>
+                                                }
+                                        </ChildContent>
+                                    </DxTabPage>
+                                }
+                            }
+                        }
+
+                    </DxTabs>
+
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Area="left-bar">
+            <Template>
+                <div class="gridlayout-left-side-bar gridlayout-item">
+                    <div style="margin-top: 36px;">
+                        <DxStackLayout Orientation="Orientation.Vertical">
+                            <Items>
+                                <DxStackLayoutItem Length="1fr">
+                                    <Template>
+                                        <div class="stacklayout-item" @onclick="@(e => SekmeEkle(-1, "Anasayfa"))">
+                                            Anasayfa
+                                        </div>
+                                    </Template>
+                                </DxStackLayoutItem>
+
+                                <DxStackLayoutItem Length="1fr">
+                                    <Template>
+                                        <div class="stacklayout-item" @onclick="@(e => SekmeEkle(2, "Muavin"))">
+                                            Muavin
+                                        </div>
+                                    </Template>
+                                </DxStackLayoutItem>
+
+                                <DxStackLayoutItem Length="1fr">
+                                    <Template>
+                                        <div class="stacklayout-item" @onclick="@(e => SekmeEkle(3, "Ekran Ara"))">
+                                            Ekran Ara
+                                        </div>
+                                    </Template>
+                                </DxStackLayoutItem>
+
+                                <DxStackLayoutItem Length="1fr">
+                                    <Template>
+                                        <div class="stacklayout-item" @onclick="@(e => SekmeEkle(4, "Personel 360"))">
+                                            Personel 360
+                                        </div>
+                                    </Template>
+                                </DxStackLayoutItem>
+
+                                <DxStackLayoutItem Length="1fr">
+                                    <Template>
+                                        <div class="stacklayout-item">
+                                            Hesap Ekstresi
+                                        </div>
+                                    </Template>
+                                </DxStackLayoutItem>
+
+                                <DxStackLayoutItem Length="1fr">
+                                    <Template>
+                                        <div class="stacklayout-item">
+                                            Talep Aç
+                                        </div>
+                                    </Template>
+                                </DxStackLayoutItem>
+
+                            </Items>
+                        </DxStackLayout>
+                    </div>
+
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+        <DxGridLayoutItem Area="footer">
+            <Template>
+                <div class="gridlayout-footer gridlayout-item">
+                    Status Bar
+                </div>
+            </Template>
+        </DxGridLayoutItem>
+    </Items>
+</DxGridLayout>
+
+@code{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    int ActiveTabIndex { get; set; }
+    readonly List<SekmeResource> _itemsForTabs = new();
+
+    protected override void OnInitialized()
+    {
+         _itemsForTabs.Add(new SekmeResource() { ResourceId = -1, Caption = "Anasayfa" });
+    }
+
+    public class SekmeResource
+    {
+        public int ResourceId { get; set; }
+        public string Caption { get; set; }
+    }
+
+    private void SekmeEkle(int resourceid, string caption)
+    {
+        SekmeResource? sekme = _itemsForTabs.FirstOrDefault(t => t.ResourceId == resourceid);
+
+        if (_itemsForTabs.Count == 0) //Collection'da hiç tab yoksa...
+        {
+            var item = new SekmeResource { ResourceId = resourceid, Caption = caption};
+            _itemsForTabs.Add(item);
+        }
+        else if (_itemsForTabs.All(c => c.Caption != caption))
+        {
+            //SekmeResource last = _itemsForTabs.Last();
+            var item = new SekmeResource { ResourceId = resourceid, Caption = caption };
+            _itemsForTabs.Add(item);
+            ActiveTabIndex = _itemsForTabs.IndexOf(item);
+        }
+        else
+        {
+            TabYukle(sekme);
+        }
+    }
+
+    private void TabYukle(SekmeResource sekme)
+    {
+        if (_itemsForTabs.Any(c => c.Caption == sekme.Caption)) //Eklemeye çalıştığımız tab listede zaten varsa onu aktifleştiriyoruz.
+        {
+            var ind = _itemsForTabs.FindIndex(c => c.ResourceId == sekme.ResourceId);
+            ActiveTabIndex = ind;
+        }
+        else
+        {
+            _itemsForTabs.Add(sekme);
+            ActiveTabIndex = _itemsForTabs.IndexOf(sekme);
+        }
+    }
+
+    private void SekmeSil(SekmeResource resource)
+    {
+        _itemsForTabs.Remove(resource);
+        ActiveTabIndex = 0;
+    }
+
+}
